@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>رفيق الدليفري</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f5;--card:#fff;--ink:#10222f;--mute:#5d6f7c;--line:#d9e1e7;--acc:#ff6a13;--acc-ink:#fff;--ok:#0f8a4b;--bad:#c62828;--soft:#fff1e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1820;--card:#15252f;--ink:#eaf1f5;--mute:#9db0bc;--line:#26394560;--soft:#2a1d14;--ok:#3ddc84;--bad:#ff7b72}}
+:root[data-theme="dark"]{--bg:#0d1820;--card:#15252f;--ink:#eaf1f5;--mute:#9db0bc;--line:#26394560;--soft:#2a1d14;--ok:#3ddc84;--bad:#ff7b72}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Cairo',Tahoma,Arial,sans-serif;line-height:1.6;padding-bottom:84px}
+main{max-width:560px;margin:0 auto;padding:14px}
+h1{font-size:22px;margin:4px 0 12px;font-weight:800}
+h2{font-size:17px;margin:0 0 10px;font-weight:800}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.hero{background:var(--ink);color:var(--bg);border-radius:18px;padding:18px;margin-bottom:12px}
+.hero .big{font-size:44px;font-weight:800;line-height:1.1;color:#ffb37f}
+.hero small{opacity:.8}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:13px;color:var(--mute);margin-bottom:2px}
+input,select{width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 14px;background:var(--acc);color:var(--acc-ink);cursor:pointer}
+button.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+button.bad{background:var(--bad);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.counter{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.counter button{width:72px;height:72px;font-size:34px;border-radius:50%;padding:0}
+.counter .n{font-size:56px;font-weight:800}
+.bar{height:12px;background:var(--line);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)}
+.kv:last-child{border:0}
+.pos{color:var(--ok);font-weight:800}.neg{color:var(--bad);font-weight:800}
+.verdict{padding:12px;border-radius:12px;font-weight:800;margin-top:10px}
+.v-good{background:#0f8a4b22;color:var(--ok)}.v-mid{background:var(--soft);color:var(--acc)}.v-bad{background:#c6282822;color:var(--bad)}
+.msg{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.msg span{flex:1}.msg button{flex:none;padding:8px 12px}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0}.chk input{width:22px;height:22px}
+.call{display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;border-radius:12px;background:var(--bg);color:var(--ink);text-decoration:none;font-weight:600;border:1px solid var(--line)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;color:var(--mute);padding:6px 2px;font-size:12px;border-radius:10px}
+nav button b{display:block;font-size:20px;font-weight:400}
+nav button[aria-selected="true"]{color:var(--acc);background:var(--soft)}
+.tab{display:none}.tab.on{display:block}
+.hint{font-size:13px;color:var(--mute)}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status"></div>
+<main>
+<h1>رفيق الدليفري 🛵</h1>
+
+<section class="tab on" id="t-day">
+  <div class="hero">
+    <small>صافي ربحك النهارده</small>
+    <div class="big" id="net">0</div>
+    <small id="heroSub"></small>
+    <div class="bar" style="margin-top:12px"><i id="goalBar"></i></div>
+    <small id="goalTxt"></small>
+  </div>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:10px">
+      <div><small class="hint">مدة الشغل</small><div id="timer" style="font-size:26px;font-weight:800">00:00:00</div></div>
+      <button id="shiftBtn">ابدأ الشيفت</button>
+    </div>
+    <div class="counter">
+      <button class="alt" id="minus" aria-label="إنقاص أوردر">−</button>
+      <div style="text-align:center"><div class="n" id="orders">0</div><small class="hint">أوردر</small></div>
+      <button id="plus" aria-label="إضافة أوردر">+</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>إعدادات اليوم</h2>
+    <div class="grid2">
+      <div><label for="price">سعر الأوردر (جنيه)</label><input id="price" type="number" inputmode="decimal"></div>
+      <div><label for="goal">هدف اليوم (جنيه)</label><input id="goal" type="number" inputmode="decimal"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>إكرامية أو بونص</h2>
+    <div class="row"><input id="tipIn" type="number" inputmode="decimal" placeholder="المبلغ"><button id="tipBtn" style="flex:none">أضف</button></div>
+  </div>
+
+  <div class="card">
+    <h2>مصاريف اليوم</h2>
+    <div class="grid2" style="margin-bottom:8px">
+      <select id="expType" aria-label="نوع المصروف"><option>بنزين</option><option>أكل وشرب</option><option>موبايل وإنترنت</option><option>صيانة</option><option>أخرى</option></select>
+      <input id="expAmt" type="number" inputmode="decimal" placeholder="المبلغ">
+    </div>
+    <button id="expBtn" class="alt" style="width:100%">أضف مصروف</button>
+    <div id="expList" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>ملخص</h2>
+    <div id="sum"></div>
+    <div class="row" style="margin-top:12px"><button id="endBtn">خلّصت اليوم واحفظه</button></div>
+  </div>
+
+  <div class="card">
+    <h2>آخر الأيام</h2>
+    <div id="hist"></div>
+  </div>
+</section>
+
+<section class="tab" id="t-calc">
+  <div class="card">
+    <h2>الأوردر ده يستاهل؟</h2>
+    <p class="hint">اكتب بيانات الأوردر وشوف تكلفته الحقيقية عليك.</p>
+    <div class="grid2">
+      <div><label for="cFee">سعر الأوردر</label><input id="cFee" type="number" inputmode="decimal" placeholder="25"></div>
+      <div><label for="cKm">المسافة رايح بس (كم)</label><input id="cKm" type="number" inputmode="decimal" placeholder="3"></div>
+      <div><label for="cWait">وقت الانتظار (دقيقة)</label><input id="cWait" type="number" inputmode="decimal" placeholder="10"></div>
+      <div><label for="cBack">هترجع فاضي؟</label><select id="cBack"><option value="1">أيوه، رجوع</option><option value="0">لا، أوردر تاني قريب</option></select></div>
+    </div>
+    <div id="cOut"></div>
+  </div>
+  <div class="card">
+    <h2>بيانات موتوسيكلك</h2>
+    <div class="grid2">
+      <div><label for="fuelP">سعر لتر البنزين</label><input id="fuelP" type="number" inputmode="decimal"></div>
+      <div><label for="kpl">بتمشي كام كم بالتر؟</label><input id="kpl" type="number" inputmode="decimal"></div>
+      <div><label for="wearK">إهلاك/صيانة لكل كم</label><input id="wearK" type="number" inputmode="decimal"></div>
+      <div><label for="hourG">أقل أجر ساعة ترضى بيه</label><input id="hourG" type="number" inputmode="decimal"></div>
+    </div>
+    <p class="hint">الأرقام الافتراضية تقديرية، عدّلها على حسب موتوسيكلك وأسعار اليوم.</p>
+  </div>
+</section>
+
+<section class="tab" id="t-msg">
+  <div class="card">
+    <h2>رسائل جاهزة للعميل</h2>
+    <p class="hint">دوس نسخ والصق في واتساب أو الشات.</p>
+    <div id="msgs"></div>
+  </div>
+  <div class="card">
+    <h2>عناوين ومواقع تتكرر</h2>
+    <div class="grid2"><input id="nTitle" placeholder="الاسم (مطعم/عميل)"><input id="nBody" placeholder="ملاحظة (مدخل، دور..)"></div>
+    <button id="nBtn" class="alt" style="width:100%;margin-top:8px">احفظ</button>
+    <div id="notes"></div>
+  </div>
+</section>
+
+<section class="tab" id="t-bike">
+  <div class="card">
+    <h2>صيانة الموتوسيكل</h2>
+    <div class="grid2">
+      <div><label for="odo">العداد دلوقتي (كم)</label><input id="odo" type="number" inputmode="numeric"></div>
+      <div><label for="oilAt">آخر تغيير زيت عند (كم)</label><input id="oilAt" type="number" inputmode="numeric"></div>
+      <div><label for="oilInt">تغيير الزيت كل (كم)</label><input id="oilInt" type="number" inputmode="numeric"></div>
+      <div><label for="chainAt">آخر تزييت جنزير عند (كم)</label><input id="chainAt" type="number" inputmode="numeric"></div>
+    </div>
+    <div id="bikeOut" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h2>فحص سريع قبل ما تنزل</h2>
+    <div id="chk"></div>
+    <button id="chkReset" class="alt" style="width:100%;margin-top:6px">صفّر القائمة</button>
+  </div>
+</section>
+
+<section class="tab" id="t-safe">
+  <div class="card">
+    <h2>أرقام الطوارئ في مصر</h2>
+    <a class="call" href="tel:122"><span>الشرطة</span><span>122</span></a>
+    <a class="call" href="tel:123"><span>الإسعاف</span><span>123</span></a>
+    <a class="call" href="tel:180"><span>المطافي</span><span>180</span></a>
+    <a class="call" href="tel:128"><span>النجدة</span><span>128</span></a>
+  </div>
+  <div class="card">
+    <h2>نصايح تكسّب أكتر وتسلم</h2>
+    <div id="tips"></div>
+  </div>
+  <div class="card">
+    <h2>المظهر</h2>
+    <div class="row"><button class="alt" data-th="light">فاتح</button><button class="alt" data-th="dark">غامق</button><button class="alt" data-th="auto">تلقائي</button></div>
+    <button id="wipe" class="bad" style="width:100%;margin-top:10px">امسح كل البيانات</button>
+  </div>
+</section>
+</main>
+
+<nav role="tablist" aria-label="الأقسام">
+  <button role="tab" aria-selected="true" data-t="day"><b>📊</b>اليوم</button>
+  <button role="tab" aria-selected="false" data-t="calc"><b>🧮</b>حاسبة</button>
+  <button role="tab" aria-selected="false" data-t="msg"><b>💬</b>رسائل</button>
+  <button role="tab" aria-selected="false" data-t="bike"><b>🔧</b>الموتوسيكل</button>
+  <button role="tab" aria-selected="false" data-t="safe"><b>🛟</b>أمان</button>
+</nav>
+
+<script>
+(function(){
+var KEY='dlv_helper_v1';
+var def={day:{orders:0,price:25,goal:500,tips:0,exps:[],start:null,acc:0},hist:[],bike:{fuel:20,kpl:35,wear:0.4,hourG:60,odo:0,oilAt:0,oilInt:2000,chainAt:0},notes:[],chk:{},theme:'auto'};
+var S;
+function load(){try{var r=localStorage.getItem(KEY);S=r?JSON.parse(r):null}catch(e){S=null}
+ if(!S)S=JSON.parse(JSON.stringify(def));
+ for(var k in def){if(S[k]===undefined)S[k]=JSON.parse(JSON.stringify(def[k]))}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function n(v){v=parseFloat(v);return isNaN(v)?0:v}
+function fmt(x){return (Math.round(x*10)/10).toLocaleString('ar-EG')}
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(function(){e.classList.remove('show')},1600)}
+function ms(){var d=S.day;return d.acc+(d.start?Date.now()-d.start:0)}
+function hms(m){var s=Math.floor(m/1000),h=Math.floor(s/3600),mi=Math.floor(s%3600/60);s=s%60;return [h,mi,s].map(function(x){return (x<10?'0':'')+x}).join(':')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+function totals(){var d=S.day;var gross=d.orders*d.price+d.tips;var exp=d.exps.reduce(function(a,e){return a+e.a},0);var net=gross-exp;var hrs=ms()/3600000;return{gross:gross,exp:exp,net:net,hrs:hrs}}
+
+function renderDay(){
+ var d=S.day,t=totals();
+ $('orders').textContent=d.orders;
+ $('net').textContent=fmt(t.net)+' ج';
+ $('heroSub').textContent='إيراد '+fmt(t.gross)+' − مصاريف '+fmt(t.exp);
+ var p=d.goal>0?Math.max(0,Math.min(100,t.net/d.goal*100)):0;
+ $('goalBar').style.width=p+'%';
+ $('goalTxt').textContent=d.goal>0?(t.net>=d.goal?'حققت هدفك، ربنا يزيدك!':'فاضل '+fmt(d.goal-t.net)+' ج على الهدف'):'';
+ $('shiftBtn').textContent=d.start?'وقّف الشيفت':'ابدأ الشيفت';
+ $('shiftBtn').className=d.start?'bad':'';
+ $('price').value=d.price;$('goal').value=d.goal;
+ var perH=t.hrs>0.02?t.net/t.hrs:0;
+ var rest=d.goal>0&&d.price>0?Math.max(0,Math.ceil((d.goal-t.net)/d.price)):0;
+ $('sum').innerHTML=
+  kv('إيراد الأوردرات',fmt(d.orders*d.price)+' ج')+kv('إكراميات وبونص',fmt(d.tips)+' ج')+kv('المصاريف','− '+fmt(t.exp)+' ج')+
+  kv('الصافي','<span class="'+(t.net>=0?'pos':'neg')+'">'+fmt(t.net)+' ج</span>')+
+  kv('صافي الساعة',t.hrs>0.02?fmt(perH)+' ج/ساعة':'ابدأ الشيفت')+
+  kv('أوردرات فاضلة للهدف',d.goal>0?rest+' أوردر':'—');
+ $('expList').innerHTML=d.exps.map(function(e,i){return '<div class="kv"><span>'+esc(e.t)+' — '+fmt(e.a)+' ج</span><button class="alt" style="padding:4px 10px" data-del="'+i+'" aria-label="حذف">✕</button></div>'}).join('');
+ var h=S.hist.slice(-7).reverse();
+ var wk=S.hist.slice(-7).reduce(function(a,x){return a+x.net},0);
+ $('hist').innerHTML=h.length?h.map(function(x){return kv(esc(x.date)+' · '+x.orders+' أوردر · '+x.hrs+' س','<span class="'+(x.net>=0?'pos':'neg')+'">'+fmt(x.net)+' ج</span>')}).join('')+kv('<b>إجمالي آخر '+h.length+' أيام</b>','<b>'+fmt(wk)+' ج</b>'):'<p class="hint">لسه مفيش أيام محفوظة. لما تخلّص يومك دوس «خلّصت اليوم».</p>';
+}
+function kv(a,b){return '<div class="kv"><span>'+a+'</span><span>'+b+'</span></div>'}
+
+function tick(){$('timer').textContent=hms(ms())}
+setInterval(function(){if(S.day.start){tick();}},1000);
+
+function renderCalc(){
+ var b=S.bike;
+ $('fuelP').value=b.fuel;$('kpl').value=b.kpl;$('wearK').value=b.wear;$('hourG').value=b.hourG;
+ calc();
+}
+function calc(){
+ var b=S.bike,fee=n($('cFee').value),km=n($('cKm').value),w=n($('cWait').value),back=n($('cBack').value);
+ var out=$('cOut');
+ if(!fee||!km){out.innerHTML='';return}
+ var tot=km*(back?2:1);
+ var fuelC=b.kpl>0?tot/b.kpl*b.fuel:0,wearC=tot*b.wear,cost=fuelC+wearC;
+ var net=fee-cost;
+ var mins=tot/25*60+w+4; // سرعة متوسطة 25 كم/س + وقت استلام وتسليم
+ var perH=net/(mins/60);
+ var cls=perH>=b.hourG?'v-good':(perH>=b.hourG*0.7?'v-mid':'v-bad');
+ var txt=perH>=b.hourG?'اقبله ✅':(perH>=b.hourG*0.7?'مقبول لو مفيش غيره 🤔':'مش مجزي ❌');
+ var minFee=cost+b.hourG*(mins/60);
+ out.innerHTML='<div style="margin-top:10px">'+kv('تكلفة البنزين',fmt(fuelC)+' ج')+kv('إهلاك وصيانة',fmt(wearC)+' ج')+kv('صافي الأوردر','<span class="'+(net>=0?'pos':'neg')+'">'+fmt(net)+' ج</span>')+kv('الوقت التقريبي',Math.round(mins)+' دقيقة')+kv('صافي الساعة',fmt(perH)+' ج')+'</div><div class="verdict '+cls+'">'+txt+'<div class="hint" style="font-weight:400;color:inherit">أقل سعر يرضيك للأوردر ده: '+fmt(minFee)+' ج</div></div>';
+}
+
+var MSGS=['أنا في الطريق ليك، هوصل خلال دقايق إن شاء الله.','أنا وصلت قدام العنوان، ممكن تنزل أو تبعتلي لوكيشن أدق؟','مش لاقي العنوان، ممكن تكلمني أو تبعتلي لوكيشن على واتساب؟','برجاء تجهيز المبلغ المطلوب فكة لو سمحت.','أنا مستني قدام الباب بقالي كام دقيقة، ممكن تستلم الأوردر؟','الأوردر اتأخر شوية من المطعم، آسف على التأخير وجاي لحضرتك حالًا.','تم التوصيل، شكرًا لحضرتك وبالهناء والشفا 🌹','الاتصال مقطوع أو مش بيرد، هسيب الأوردر عند الأمن لو تحب أو أستنى شوية؟'];
+function renderMsgs(){
+ $('msgs').innerHTML=MSGS.map(function(m,i){return '<div class="msg"><span>'+esc(m)+'</span><button data-cp="'+i+'">نسخ</button></div>'}).join('');
+ $('notes').innerHTML=S.notes.map(function(x,i){return '<div class="msg"><span><b>'+esc(x.t)+'</b><br>'+esc(x.b)+'</span><button class="alt" data-nd="'+i+'">حذف</button></div>'}).join('');
+}
+function copy(t){
+ function fb(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('اتنسخت')}catch(e){toast('معرفتش أنسخ')}document.body.removeChild(a)}
+ try{navigator.clipboard.writeText(t).then(function(){toast('اتنسخت')},fb)}catch(e){fb()}
+}
+
+var CHK=['الفتيس والفرامل شغالين','ضغط الكاوتش مظبوط','الأنوار والفلاشر شغالين','بنزين كفاية للشيفت','الموبايل شاحن وفيه باور بانك','الخوذة والجاكيت والجوانتي','البوكس نضيف ومقفول كويس','رخصة الموتوسيكل والبطاقة معاك','فكة للعملاء'];
+function renderBike(){
+ var b=S.bike;
+ $('odo').value=b.odo||'';$('oilAt').value=b.oilAt||'';$('oilInt').value=b.oilInt;$('chainAt').value=b.chainAt||'';
+ var o='';
+ if(b.odo){
+  var left=b.oilAt+b.oilInt-b.odo;
+  o+=kv('تغيير الزيت',left>0?'باقي '+left+' كم':'<span class="neg">اتأخر '+(-left)+' كم، غيّره دلوقتي</span>');
+  var cl=b.chainAt+500-b.odo;
+  o+=kv('تزييت الجنزير (كل 500 كم)',cl>0?'باقي '+cl+' كم':'<span class="neg">محتاج تزييت</span>');
+ }else o='<p class="hint">اكتب قراءة العداد عشان أحسبلك المواعيد.</p>';
+ $('bikeOut').innerHTML=o;
+ $('chk').innerHTML=CHK.map(function(c,i){return '<label class="chk"><input type="checkbox" data-c="'+i+'"'+(S.chk[i]?' checked':'')+'><span style="color:var(--ink);font-size:15px">'+c+'</span></label>'}).join('');
+}
+
+var TIPS=['اشتغل في أوقات الذروة: الغدا (١٢–٣) والعشا (٧–١٠) وآخر الأسبوع.','ماتشيلش أوردر بعيد ومفيش رجوع منه، احسبه في الحاسبة الأول.','خليك قريب من تجمع مطاعم عشان تقلل وقت الانتظار والمشي الفاضي.','لف الأوردرات اللي في نفس الاتجاه مع بعض لو الشركة بتسمح.','صوّر الأوردر أو اتأكد من الأكل قبل ما تمشي من المطعم.','اشحن الموبايل وخلي خريطة العنوان محمّلة قبل الطلعة.','المطر والزحمة وقت خطر: خفف السرعة، السلامة أهم من أي أوردر.','سجّل كل مصروف عشان تعرف ربحك الحقيقي مش بس اللي دخل جيبك.','حط جنب كل أسبوع مبلغ للصيانة والإصلاحات المفاجئة.'];
+function renderTips(){$('tips').innerHTML=TIPS.map(function(t){return '<div class="kv"><span>• '+t+'</span></div>'}).join('')}
+
+function applyTheme(){var r=document.documentElement;if(S.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',S.theme)}
+
+function all(){renderDay();renderCalc();renderMsgs();renderBike();renderTips();tick();applyTheme()}
+
+document.addEventListener('click',function(e){
+ var t=e.target.closest('button');if(!t)return;
+ var d=S.day;
+ if(t.id==='plus'){d.orders++;save();renderDay()}
+ else if(t.id==='minus'){d.orders=Math.max(0,d.orders-1);save();renderDay()}
+ else if(t.id==='shiftBtn'){if(d.start){d.acc+=Date.now()-d.start;d.start=null}else d.start=Date.now();save();renderDay();tick()}
+ else if(t.id==='tipBtn'){var v=n($('tipIn').value);if(v>0){d.tips+=v;$('tipIn').value='';save();renderDay();toast('اتضافت')}}
+ else if(t.id==='expBtn'){var a=n($('expAmt').value);if(a>0){d.exps.push({t:$('expType').value,a:a});$('expAmt').value='';save();renderDay()}else toast('اكتب المبلغ')}
+ else if(t.dataset.del!==undefined){d.exps.splice(+t.dataset.del,1);save();renderDay()}
+ else if(t.id==='endBtn'){
+  if(!d.orders&&!d.exps.length&&!d.tips){toast('مفيش بيانات تتحفظ');return}
+  var tt=totals();
+  S.hist.push({date:new Date().toLocaleDateString('ar-EG',{weekday:'short',day:'numeric',month:'short'}),orders:d.orders,net:tt.net,hrs:Math.round(tt.hrs*10)/10});
+  if(S.hist.length>60)S.hist.shift();
+  S.day={orders:0,price:d.price,goal:d.goal,tips:0,exps:[],start:null,acc:0};
+  save();renderDay();tick();toast('اتحفظ، تعيش يا بطل')}
+ else if(t.dataset.cp!==undefined){copy(MSGS[+t.dataset.cp])}
+ else if(t.id==='nBtn'){var a1=$('nTitle').value.trim(),b1=$('nBody').value.trim();if(a1){S.notes.push({t:a1,b:b1});$('nTitle').value='';$('nBody').value='';save();renderMsgs()}}
+ else if(t.dataset.nd!==undefined){S.notes.splice(+t.dataset.nd,1);save();renderMsgs()}
+ else if(t.id==='chkReset'){S.chk={};save();renderBike()}
+ else if(t.dataset.th){S.theme=t.dataset.th;save();applyTheme()}
+ else if(t.id==='wipe'){if(confirm('هتمسح كل البيانات المحفوظة؟')){S=JSON.parse(JSON.stringify(def));save();all();toast('اتمسحت')}}
+ else if(t.dataset.t){
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});
+  $('t-'+t.dataset.t).classList.add('on');
+  document.querySelectorAll('nav button').forEach(function(x){x.setAttribute('aria-selected',x===t)});
+  window.scrollTo(0,0)}
+});
+document.addEventListener('change',function(e){
+ var i=e.target,b=S.bike;
+ if(i.id==='price'){S.day.price=n(i.value);save();renderDay()}
+ else if(i.id==='goal'){S.day.goal=n(i.value);save();renderDay()}
+ else if(i.dataset.c!==undefined){S.chk[i.dataset.c]=i.checked;save()}
+ else if({fuelP:'fuel',kpl:'kpl',wearK:'wear',hourG:'hourG',odo:'odo',oilAt:'oilAt',oilInt:'oilInt',chainAt:'chainAt'}[i.id]){b[{fuelP:'fuel',kpl:'kpl',wearK:'wear',hourG:'hourG',odo:'odo',oilAt:'oilAt',oilInt:'oilInt',chainAt:'chainAt'}[i.id]]=n(i.value);save();calc();renderBike()}
+});
+document.addEventListener('input',function(e){if(/^c(Fee|Km|Wait|Back)$/.test(e.target.id))calc()});
+
+load();all();
+})();
+</script>
+</body>
+</html>
